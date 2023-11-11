@@ -4,26 +4,23 @@
     <form class="mx-auto w-full md:w-2/4" wire:submit='submit'>
         <div class="mb-4">
             <x-label>Title: </x-label>
-            <x-input class="w-full" wire:model='title' ></x-input>
-            {{-- @error( 'title' ) <span class="text-sm text-red-500">{{ $message }}</span> @enderror --}}
-            <x-input-error for="title" />
+            <x-input class="w-full" wire:model.live='createJob.title' ></x-input>
+            <x-input-error for="createJob.title" />
         </div>
         <div class="mb-4">
             <x-label>Content: </x-label>
-            <x-text-area class="w-full" wire:model='content' ></x-text-area>
-            {{-- @error( 'content' ) <span class="text-sm text-red-500">{{ $message }}</span> @enderror --}}
-            <x-input-error for="content" />
+            <x-text-area class="w-full" wire:model.live='createJob.content' ></x-text-area>
+            <x-input-error for="createJob.content" />
         </div>
         <div class="mb-4">
             <x-label>Category: </x-label>
-            <x-select class="w-full" wire:model='category_id' >
+            <x-select class="w-full" wire:model.live='createJob.category_id' >
                 <option value="" selected disabled>--Seleccione una opción--</option>
                 @foreach ( $categories as $category )
                 <option class="" value="{{ $category->id }}">{{ $category->name }}</option>
                 @endforeach
             </x-select>
-            {{-- @error( 'category_id' ) <span class="text-sm text-red-500">{{ $message }}</span> @enderror --}}
-            <x-input-error for="category_id" />
+            <x-input-error for="createJob.category_id" />
         </div>
         <div class="mb-4">
             <x-label>Technologies: </x-label>
@@ -31,14 +28,13 @@
                 @foreach ( $tags as $tag )
                     <li class="w-1/3 md:w-1/6">
                         <x-label>
-                            <x-checkbox value="{{ $tag->id }}" wire:model='tagSelected'/>
+                            <x-checkbox value="{{ $tag->id }}" wire:model.live='createJob.tag'/>
                             {{ $tag->name }}
                         </x-label>
                     </li>
                 @endforeach
             </ul>
-            {{-- @error( 'tagSelected' ) <span class="text-sm text-red-500">{{ $message }}</span> @enderror --}}
-            <x-input-error for="tagSelected" />
+            <x-input-error for="createJob.tag" />
         </div>
         <div class="mb-4 flex justify-end">
             <button type="submit" class="w-full md:w-1/3 px-8 py-2 text-white bg-blue-500 hover:bg-blue-700 rounded-md">Submit</button>
@@ -69,7 +65,7 @@
                             </td>
                             <td class="p-1">
                                 <div class="mx-auto flex flex-row justify-around text-xl">
-                                    <button wire:click='fillModalEdit( {{ $post->id }} )' class="bg-green-500 hover:bg-green-700 rounded-full text-white"><i class="fa-regular fa-pen-to-square px-2 py-1"></i></button>
+                                    <button wire:click='editModal( {{ $post->id }} )' class="bg-green-500 hover:bg-green-700 rounded-full text-white"><i class="fa-regular fa-pen-to-square px-2 py-1"></i></button>
                                     <button wire:click='showDestroyModal( {{ $post->id }} )' class="bg-red-500 hover:bg-red-700 rounded-full text-white"><i class="fa-solid fa-trash-can px-2 py-1"></i></button>
                                 </div>
                             </td>
@@ -79,8 +75,8 @@
             </table>
         </div>
     </div>
-    {{-- Modal --}}
-    @if ( $openEditModal )
+    {{-- Modal $editJob.openEditModal --}}
+    @if ( $editJob->openEditModal )
     <div class="inset-0 fixed bg-blue-800 bg-opacity-25 p-3 rounded-lg shadow-lg">
         <div class="py-12 text-black">
             <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
@@ -92,22 +88,22 @@
                     <form class="mx-auto w-full md:w-3/4" wire:submit='submitUpdate'>
                         <div class="mb-4">
                             <x-label>Title: </x-label>
-                            <x-input class="w-full" wire:model='postEdit.title' ></x-input>
-                            <x-input-error for="postEdit.title" />
+                            <x-input class="w-full" wire:model.live='editJob.title' ></x-input>
+                            <x-input-error for="editJob.title" />
                         </div>
                         <div class="mb-4">
                             <x-label>Content: </x-label>
-                            <x-text-area class="w-full" wire:model='postEdit.content' ></x-text-area>
+                            <x-text-area class="w-full" wire:model.live='editJob.content' ></x-text-area>
                         </div>
                         <div class="mb-4">
                             <x-label>Cateogry</x-label>
-                            <x-select class="w-full" wire:model='postEdit.category_id' >
+                            <x-select class="w-full" wire:model.live='editJob.category_id' >
                                 <option value="" selected disabled>--Seleccione una opción--</option>
                                 @foreach ( $categories as $category )
                                 <option class="" value="{{ $category->id }}">{{ $category->name }}</option>
                                 @endforeach
                             </x-select>
-                            <x-input-error for="postEdit.category_id" />
+                            <x-input-error for="editJob.category_id" />
                         </div>
                         <div class="mb-4">
                             <x-label>Technologies</x-label>
@@ -115,13 +111,13 @@
                                 @foreach ( $tags as $tag )
                                     <li class="w-1/3 md:w-1/6">
                                         <x-label>
-                                            <x-checkbox value="{{ $tag->id }}" wire:model='postEdit.tag'/>
+                                            <x-checkbox value="{{ $tag->id }}" wire:model.live='editJob.tag'/>
                                             {{ $tag->name }}
                                         </x-label>
                                     </li>
                                 @endforeach
                             </ul>
-                            <x-input-error for="postEdit.tag" />
+                            <x-input-error for="editJob.tag" />
                         </div>
                         <div class="mb-4 flex justify-end">
                             <button type="submit" class="w-full md:w-1/3 px-8 py-2 text-white bg-blue-500 hover:bg-blue-700 rounded-md">Submit</button>
