@@ -3,7 +3,9 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Livewire\Attributes\Rule;
+use Livewire\Attributes\Lazy;
 use App\Livewire\Forms\CreateJobForm;
 use App\Livewire\Forms\EditJobForm;
 
@@ -11,8 +13,10 @@ use App\Models\Category;
 use App\Models\Tag;
 use App\Models\Post;
 
+#[Lazy]
 class Formulario extends Component
 {
+    use WithFileUploads;
 
     public CreateJobForm $createJob;
     public EditJobForm   $editJob;
@@ -23,6 +27,14 @@ class Formulario extends Component
     public $postDestroyTitle = '';
 
     public $openDestroyModal = false;
+
+    public function placeholder() {
+        return <<<'HTML'
+            <div>
+                <p>Cargando...</p>
+            </div>
+        HTML;
+    }
 
     public function mount() {
         $this->categories = Category::all();
@@ -39,6 +51,7 @@ class Formulario extends Component
         $this->createJob->save();
         //Update posts
         $this->getPosts();
+        $this->dispatch( 'notification', 'Job created' );
     }
 
     public function closeModal( $modal ) {
@@ -58,8 +71,8 @@ class Formulario extends Component
     public function submitUpdate(){
 
         $this->editJob->update();
-
         $this->getPosts();
+        $this->dispatch( 'notification', 'Job edited' );
     }
 
     public function showDestroyModal( Post $post ) {
@@ -73,10 +86,12 @@ class Formulario extends Component
         $this->reset([ 'postDestroyId', 'postDestroyTitle' ]);
         $this->closeModal( 1 );
         $this->getPosts();
+        $this->dispatch( 'notification', 'Job deleted' );
     }
 
     public function render()
     {
         return view( 'livewire.formulario' );
     }
+
 }

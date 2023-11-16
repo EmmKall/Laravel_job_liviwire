@@ -10,7 +10,7 @@
             <div class="overflow-hidden bg-white shadow-xl sm:rounded-lg">
                 {{-- <x-welcome /> --}}
                 {{-- @livewire('create-post', [ 'title' => 'Hola mundo', 'user' => 1, 'description' => '' ] ) --}}
-                @livewire('formulario', [] )
+                <livewire:formulario lazy /> {{-- @livewire('formulario', [] ) --}}
             </div>
         </div>
     </div>

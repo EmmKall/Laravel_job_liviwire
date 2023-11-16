@@ -23,6 +23,15 @@
             <x-input-error for="createJob.category_id" />
         </div>
         <div class="mb-4">
+            <x-label>Image:</x-label>
+            <input type="file" wire:model='createJob.image_path' wire:key='{{ $createJob->imageKey }}' />
+        </div>
+        @if ( $createJob->image_path )
+            <div class="mb-4">
+                <img src="{{ $createJob->image_path->temporaryUrl() }}" alt="post" class="w-[10rem] mx-auto" >
+            </div>
+        @endif
+        <div class="mb-4">
             <x-label>Technologies: </x-label>
             <ul class="w-full flex flex-row justify-between flex-wrap">
                 @foreach ( $tags as $tag )
@@ -46,6 +55,7 @@
         <div class="w-full flex flex-row justify-between flex-wrap max-h-full overflow-auto">
             <table class="w-full overflow-x-scroll">
                 <thead class="p-1 bg-blue-700 text-white text-center">
+                    <th class="p-1 w-3/12 md:w-3/12">Image</th>
                     <th class="p-1 w-3/12 md:w-3/12">Title</th>
                     <th class="p-1 w-5/12 md:w-4/12">Description</th>
                     <th class="p-1 w-2/12 md:w-2/12">Tecnologies</th>
@@ -54,6 +64,12 @@
                 <tbody>
                     @foreach ( $posts as $key => $post )
                         <tr class="border-b-2 border-blue-700 {{ ( $key%2 === 0 ) ? 'bg-gray-50' : 'bg-gray-100' }}">
+                            <td class="p-1">
+                                @if( $post->image_path )
+                                    <img src="{{ $post->image_path }}" alt="post" class="w-[1rem]">
+                                    {{ $post->image_path }}
+                                @endif
+                            </td>
                             <td class="p-1">{{ $post->title }}</td>
                             <td class="p-1">{{ $post->content }}</td>
                             <td class="p-1">
@@ -106,6 +122,10 @@
                             <x-input-error for="editJob.category_id" />
                         </div>
                         <div class="mb-4">
+                            <x-label>Image:</x-label>
+                            <input type="file" wire:model='editJob.image_path' wire:key='{{ $editJob->imageKey }}' />
+                        </div>
+                        <div class="mb-4">
                             <x-label>Technologies</x-label>
                             <ul class="w-full flex flex-row justify-between flex-wrap">
                                 @foreach ( $tags as $tag )
@@ -145,6 +165,16 @@
             </div>
         </div>
     @endif
+
+    @push( 'js' )
+        {{-- Agregar sweetlaert2 --}}
+        <script>
+            Livewire.on( 'notification', function( message ){ //message: Arrray
+                alert( message );
+                console.log( message );
+            });
+        </script>
+    @endpush
 
 </div>
 
