@@ -24,7 +24,18 @@
         </div>
         <div class="mb-4">
             <x-label>Image:</x-label>
-            <input type="file" wire:model='createJob.image_path' wire:key='{{ $createJob->imageKey }}' />
+            <div
+                x-data="{ isUploading: false, progress: 0 }"
+                x-on:livewire-upload-start="isUploading = true"
+                x-on:livewire-upload-finish="isUploading = false"
+                x-on:livewire-upload-error="isUploading = false"
+                x-on:livewire-upload-progress="progress = $event.detail.progress"
+            >
+                <input type="file" wire:model='createJob.image_path' wire:key='{{ $createJob->imageKey }}' />
+                <div class="w-full" x-show="isUploading">
+                    <progress class="bg-blue-500 " max="100" x-bind:value="progress"></progress>
+                </div>
+            </div>
         </div>
         @if ( $createJob->image_path )
             <div class="mb-4">
@@ -46,7 +57,10 @@
             <x-input-error for="createJob.tag" />
         </div>
         <div class="mb-4 flex justify-end">
-            <button type="submit" class="w-full md:w-1/3 px-8 py-2 text-white bg-blue-500 hover:bg-blue-700 rounded-md">Submit</button>
+            <button type="submit" wire:loading.attr='disabled' wire:loading.class="opacity-25" class="w-full md:w-1/3 px-8 py-2 text-white bg-blue-500 hover:bg-blue-700 rounded-md">Submit</button>
+        </div>
+        <div class="" wire:loading wire:target='submit'>
+            <p>Procensando...</p>
         </div>
     </form>
     {{-- Ofertas --}}
@@ -55,19 +69,20 @@
         <div class="w-full flex flex-row justify-between flex-wrap max-h-full overflow-auto">
             <table class="w-full overflow-x-scroll">
                 <thead class="p-1 bg-blue-700 text-white text-center">
-                    <th class="p-1 w-3/12 md:w-3/12">Image</th>
-                    <th class="p-1 w-3/12 md:w-3/12">Title</th>
-                    <th class="p-1 w-5/12 md:w-4/12">Description</th>
+                    <th class="p-1 w-2/12 md:w-2/12">Image</th>
+                    <th class="p-1 w-2/12 md:w-2/12">Title</th>
+                    <th class="p-1 w-4/12 md:w-4/12">Description</th>
                     <th class="p-1 w-2/12 md:w-2/12">Tecnologies</th>
-                    <th class="p-1 w-2/12 md:w-3/12">Actions</th>
+                    <th class="p-1 w-2/12 md:w-2/12">Actions</th>
                 </thead>
                 <tbody>
                     @foreach ( $posts as $key => $post )
                         <tr class="border-b-2 border-blue-700 {{ ( $key%2 === 0 ) ? 'bg-gray-50' : 'bg-gray-100' }}">
-                            <td class="p-1">
+                            <td class="p-1 mx-auto">
                                 @if( $post->image_path )
-                                    <img src="{{ $post->image_path }}" alt="post" class="w-[1rem]">
-                                    {{ $post->image_path }}
+                                    <div class="w-full mx-auto">
+                                        <img src="{{ URL::asset( 'storage/' . $post->image_path ) }}" alt="post" class="mx-auto w-[5rem] md:w-[10rem]">
+                                    </div>
                                 @endif
                             </td>
                             <td class="p-1">{{ $post->title }}</td>
@@ -89,6 +104,9 @@
                     @endforeach
                 </tbody>
             </table>
+            <div class="">
+                {{ $posts->links() }}
+            </div>
         </div>
     </div>
     {{-- Modal $editJob.openEditModal --}}

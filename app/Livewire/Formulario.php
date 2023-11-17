@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 use Livewire\Attributes\Rule;
 use Livewire\Attributes\Lazy;
 use App\Livewire\Forms\CreateJobForm;
@@ -17,11 +18,12 @@ use App\Models\Post;
 class Formulario extends Component
 {
     use WithFileUploads;
+    use WithPagination;
 
     public CreateJobForm $createJob;
     public EditJobForm   $editJob;
 
-    public $categories, $tags, $posts;
+    public $categories, $tags; //, $posts
 
     public $postDestroyId = '';
     public $postDestroyTitle = '';
@@ -39,7 +41,7 @@ class Formulario extends Component
     public function mount() {
         $this->categories = Category::all();
         $this->tags       = Tag::all();
-        $this->getPosts();
+        //$this->getPosts();
     }
 
     public function getPosts() {
@@ -50,8 +52,8 @@ class Formulario extends Component
 
         $this->createJob->save();
         //Update posts
-        $this->getPosts();
         $this->dispatch( 'notification', 'Job created' );
+        //$this->getPosts();
     }
 
     public function closeModal( $modal ) {
@@ -71,8 +73,8 @@ class Formulario extends Component
     public function submitUpdate(){
 
         $this->editJob->update();
-        $this->getPosts();
         $this->dispatch( 'notification', 'Job edited' );
+        //$this->getPosts();
     }
 
     public function showDestroyModal( Post $post ) {
@@ -85,13 +87,16 @@ class Formulario extends Component
         Post::destroy( $this->postDestroyId );
         $this->reset([ 'postDestroyId', 'postDestroyTitle' ]);
         $this->closeModal( 1 );
-        $this->getPosts();
         $this->dispatch( 'notification', 'Job deleted' );
+        //$this->getPosts();
     }
 
     public function render()
     {
-        return view( 'livewire.formulario' );
+        $post = Post::orderBy( 'id', 'desc' )->paginate( 5, pageName: 'pagePost' );
+        return view( 'livewire.formulario', [
+            'posts' => $post
+        ] );
     }
 
 }
